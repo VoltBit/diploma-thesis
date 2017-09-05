@@ -1,0 +1,58 @@
+\chapter{Evaluation}
+
+As stated in the introductory chapter, the framework proposal has one important purpose, to validate a Linux distribution based on a specification. It should provide the user with a measure of how compatible a given Linux based system is with one of the supported specifications. The evaluation chapter will try to determine to what extend the project meets these requirements, if it provides the expected functionality and finally, how it compares to the existing solutions.
+
+The following list is a compilation of requirements either present in the projects description or based on the features already available in software with a similar purpose.
+
+\begin{enumerate}
+\item Enable a vendor of distributions to easily verify their compatibility with a specification
+\item Develop an extensible system
+\item Encapsulate the available Linux testing suites
+\item Develop a scalable architecture
+\end{enumerate}
+
+
+\textbf{1. Enable a vendor of distributions to easily verify their compatibility with a specification}
+
+The current state of the Ellida framework makes a specification available as a test suite and enables the tester to run tests for individual requirements. Therefore it offers a systematic and easy to track system with quantifiable results which has the required functionality. In addition, the process is made simple from two points of view.
+
+Firstly, it offers a high degree of automation for the setup stage through integration with Yocto. If a large enough set of providers are supported by Ellida, the setup can become cumbersome, especially if it has to be repeated on many different variants of a system. A Yocto based setup will also guarantee that the Daemon component and the test suite have a uniform setup across all systems, eliminating trivial problems such as path errors or missing dependencies. Since the framework is defined as a separate OpenEmbedded layer and as a set of dependencies, Yocto can automatically manage the aforementioned laborious task.
+
+Secondly, by abstracting away the details of a specification and formatting the test suite so that it mirrors the specifications, it becomes easy to track compatibility rate as well as overall coverage. An attribute difficult to asses in practice can eventually become a numeric value.
+
+\textbf{2. Develop an extensible system}
+
+The "extensibility" trait is attributed both to the test suite and the technical system. The test suite is extensible in a sense that it has a permissive format, yet the structure is dictated by the specification. Furthermore, by defining every requirement as a list of test sets, each set with a specific provider, the tester is free to use as many tests and tools as possible to test a single requirement. The metadata uses the ubiquitous JSON format, both easy to parse and human readable.
+
+The extensibility of the technical system is more limited from an architectural point of view. The main components are fixed, as well as their behaviours, but the system is very modular and the requirements are simple enough not to require any change - connect to a target and run a set of tests. From a functional point of view, the Daemon, the Manager and the Controller are very easily extensible.
+
+\begin{itemize}
+\item \textbf{The Daemon} encapsulates a provider module, which is made of class abstractions for open source testing tools. To add a new provider, a new abstraction class needs to be written and added to the module. The effort is small considering the extensive functionality gained, but some tools are more difficult to use than others. One aspect that influences the effort of adding providers is their availability within the OpenEmbedded collection of software.
+\item \textbf{The Manager} contains a set of parsers that creates the representation of a specification. The starting point for supporting a new specification is to write a parser class and integrate it. However, the obvious bulk of the work will come afterwards when populating the new test suite.
+\item \textbf{The Controller} or the UI, uses software that benefits from a large community, Flask is notoriously easy to extend or modify and a large collection of plugins is already available. This makes it easy to add advanced functionality such as databases or visualization tools.
+\end{itemize}
+
+\textbf{3. Encapsulate the available Linux testing suites}
+
+As discussed in previous chapters, testing tools and frameworks from the open source community are abstracted as \textbf{providers}. Currently the implementation only supports three such systems - LTP, Image Tests and Core - basic functionality that enables the execution of Python scripts. However, the model allows integration for any tool.
+
+\textbf{4. Develop a scalable architecture}
+
+By distributing functionality among different components communicating through TCP connections the framework can fit within a wide range of testing setups and can take various forms so that it makes better use of resources. It can run on a single computer or spread functionality across multiple nodes. Since using more Daemons at once is not yet implemented, the topic of distributed testing is further developed in the \textbf{Further Developments} chapter.
+
+\section{Performance}
+The current implementation allows a user to run a small dummy set of tests on any Linux target on which a Daemon instance runs. The communication protocol currently supports running tests on one Daemon at a time. Given this limitation it is difficult to asses the framework performance-wise. The communication overhead is negligible for such a low packet traffic and the data passing through the system is minimal - JSON formated test sets and text log files. The interface runs smoothly with very rare performance drops and no obvious glitches on any of the major browsers.
+
+In terms of resource footprint the Flask backend uses less than 8MB or memory. During a light stress test with close to 100 TCP connections active, a bandwidth usage of less than 4Mbit/s and an average of four requests per second, the CPU usage remained under 50\%. The test was run on a very low spec board - a Rapsberry Pi Zero W with one ARMv7 1GHz core and 512MB of memory. The reduced maximum bandwidth is in part attributed to the slow WiFi connection.
+
+No extensive stress tests were run for one particular reason, it would not test the architectural limits of the system, but the technical limits of the technologies used such as the Flask backend, the Javascript/Python implementation of WebSockets, ZeroMQ network etc.
+
+The most relevant metrics are how suitable the framework is for the task and how much faster the development of embedded systems becomes by using it. Unfortunately, developing a full test suite that covers most of a specification is a very laborious and subjective task. Furthermore, even if the system was complete - provided distributed testing and a complete test suite - the technical performance of the framework itself would not be the bottleneck in terms of time. The overhead added by the system is negligible in comparison to the network communication times and more importantly, the tests run times. The functionality was tested with a small set of LTP control files that ran up to three common tests such as memory allocation and filesystem operations on several types of systems - VMWare and Qemu VMs and x86 Ubuntu Linux.
+
+\section{Limitations}
+
+While the model is intended to be powerful through simplicity, the current technical implementation does not use it at full potential. Several limitations spawn from the shallow implementation of the communication protocol, namely - the system is not fault tolerant, the UI can only use one Daemon at a time and blocks while tests are being run. The scalability is hindered also by the lack of a formal system that allows tests to be run in parallel on the same system. The current implementation does not contain any information about how tests relate to one another. Therefore, running multiple tests on the same system can not be achieved safely due to the influence some tests might have on others. Benchmarking tests for instance could alter the results of any other type of test.
+
+Perhaps the most crippling missing part are the test suites themselves. Though arguably not part of the framework, a test suite that validates an entire specification is difficult to write. The next chapter develops on a profile based concept that could ease the task by making it a community effort and share the progress and work between individual developers or vendors.
+
+The framework is highly dependable on the Yocto software stack. Therefore, a notable limitation is the OpenEmbedded software collection that is the source of providers. If a tool is intended to be used and is not already in the OE collection, then it first has to be integrated through an OE layer. However, the benefits of using Yocto and OE and the extended documentation about OE layers lead to a limited impact on development time.

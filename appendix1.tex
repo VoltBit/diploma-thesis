@@ -1,0 +1,35 @@
+\chapter*{Source code}
+\begin{lstlisting}[caption = {Daemons Bitbake recipe}]
+DESCRIPTION = "Daemon process that manages communication between the engine and the target"
+SECTION = "ellida"
+LICENSE = "MIT"
+SRC_URI = "file://setup.py \
+            file://ellida_daemon.py \
+                file://ellidadaemon/__init__.py \
+                file://ellidadaemon/settings.py \
+                    file://ellidadaemon/providers/__init__.py \
+                    file://ellidadaemon/providers/ltp_provider.py \
+                    file://ellidadaemon/providers/provider.py \
+                file://ellidadaemon/daemon.py"
+SRC_URI += "file://ellida_tests"
+PYTHON_2_LIBS = "/usr/bin/python2.7/site-packages/"
+PYTHON_3_LIBS = "/usr/bin/python3.5/site-packages/"
+S = "${WORKDIR}"
+TEST_LOG = "/opt/logs"
+TEST_DST = "/opt/"
+inherit setuptools
+
+RDEPENDS_${PN} += "\
+        python-pyzmq \
+        python-daemonize"
+do_install_append() {
+    rm -rf ${D}${TEST_DST}
+    install -d ${D}${TEST_DST}
+    install -d ${D}${TEST_LOG}
+    cp -r ${S}/ellida_tests ${D}${TEST_DST}
+    install -d ${D}${bindir}
+    install -m 0755 ellida_daemon.py ${D}${bindir}
+}
+FILES_${PN} += "/opt/ellida_tests/*"
+FILES_${PN} += "/opt/logs"
+\end{lstlisting}
