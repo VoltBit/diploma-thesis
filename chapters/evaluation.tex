@@ -14,7 +14,7 @@ The following list is a compilation of requirements either present in the projec
 
 \textbf{1. Enable a vendor of distributions to easily verify their compatibility with a specification}
 
-The current state of the Ellida framework makes a specification available as a test suite and enables the tester to run tests for individual requirements. Therefore it offers a systematic and easy to track system with quantifiable results which has the required functionality. In addition, the process is made simple from two points of view.
+The current state of the Ellida framework makes a specification available as a test suite and enables the tester to run tests for individual requirements. Therefore it offers a systematic and easy to track system with quantifiable results. In addition, the process is made simple from two points of view.
 
 Firstly, it offers a high degree of automation for the setup stage through integration with Yocto. If a large enough set of providers are supported by Ellida, the setup can become cumbersome, especially if it has to be repeated on many different variants of a system. A Yocto based setup will also guarantee that the Daemon component and the test suite have a uniform setup across all systems, eliminating trivial problems such as path errors or missing dependencies. Since the framework is defined as a separate OpenEmbedded layer and as a set of dependencies, Yocto can automatically manage the aforementioned laborious task.
 
@@ -28,7 +28,7 @@ The extensibility of the technical system is more limited from an architectural 
 
 \begin{itemize}
 \item \textbf{The Daemon} encapsulates a provider module, which is made of class abstractions for open source testing tools. To add a new provider, a new abstraction class needs to be written and added to the module. The effort is small considering the extensive functionality gained, but some tools are more difficult to use than others. One aspect that influences the effort of adding providers is their availability within the OpenEmbedded collection of software.
-\item \textbf{The Manager} contains a set of parsers that creates the representation of a specification. The starting point for supporting a new specification is to write a parser class and integrate it. However, the obvious bulk of the work will come afterwards when populating the new test suite.
+\item \textbf{The Manager} contains a set of parsers that can output the representation of a specification. The starting point for supporting a new specification is to write a parser class and integrate it. However, the obvious bulk of the work will come afterwards when populating the new test suite.
 \item \textbf{The Controller} or the UI, uses software that benefits from a large community, Flask is notoriously easy to extend or modify and a large collection of plugins is already available. This makes it easy to add advanced functionality such as databases or visualization tools.
 \end{itemize}
 

@@ -80,10 +80,10 @@ The engine is meant to function as a publicly accessible service, ideally paired
 \subsubsection*{The Controller}
 Also referred to as the UI, it serves as the main input and output system. Considering that it is implemented as a Flask based web application it also fulfils one of the initial requirements of the project, that test control is available remotely. Although the system is referred as "user interface" it embodies one of the active nodes from the testing network. This means that the backend is just as important as the frontend.
 
-In the current implementation of the communication protocol, one Controller can run tests on only one Daemon at a time. The user can select what part of the specification it intends to test and the information will be bundled together and send to the target. When a user decides to run a set of tests on a Daemon (target device or VM), the Controller starts listening on a random port and sends it to the Engine. The Daemon receives the identification details and creates a direct connection, the connection is only active while the tests run and ends after the Daemon had sent the results back.
+In the current implementation of the communication protocol, one Controller can run tests on only one Daemon at a time. The user can select what part of the specification it intends to test and the information will be bundled together and sent to the target. When a user decides to run a set of tests on a Daemon (target device or VM), the Controller starts listening on a random port and notifies the Engine. The Daemon receives the identification details and creates a direct connection, the connection is only active while the tests run and ends after the Daemon had sent the results back.
 
 \subsubsection*{The Daemon}
-The Daemon is the part of the system that triggers the actual testing process. It uses provider modules to execute provider specific files and to gather the results. As the name suggests, it is intended to run as a daemon process and connects to an Engine instance. Selecting an Engine to connect to is done through a configuration file.
+The Daemon is the part of the system that triggers the actual testing process. It uses provider modules to execute specific files and to gather the results. As the name suggests, it is intended to run as a daemon process and connects to an Engine instance. Selecting an Engine to connect to is done through a configuration file.
 
 The Daemon is installed through the Yocto build system, in particular, through a Bitbake recipe. The program resides in the system as a globally accessible Python module. While running, the Daemon listens for messages from the Engine, reads the requests and uses a locally available test suite to search for the requested tests. 
 
@@ -105,8 +105,6 @@ One of the more static parts of the framework, the Manager is a collection of pa
 \vspace{7mm}
 
 Together, these four components fulfil the requirements of parsing and representing a specification, exposing test controls to the user, manage remote execution of tests, spawn test processes, and return test results.
-
-\section*{}
 
 \section{Yocto integration}
 
